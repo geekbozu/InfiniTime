@@ -12,35 +12,33 @@ LV_IMG_DECLARE(bg_clock);
 using namespace Pinetime::Applications::Screens;
 
 namespace {
-constexpr int16_t HourLength = 70;
-constexpr int16_t MinuteLength = 90;
-constexpr int16_t SecondLength = 110;
+  constexpr int16_t HourLength = 70;
+  constexpr int16_t MinuteLength = 90;
+  constexpr int16_t SecondLength = 110;
 
-// sin(90) = 1 so the value of _lv_trigo_sin(90) is the scaling factor
-const auto LV_TRIG_SCALE = _lv_trigo_sin(90);
+  // sin(90) = 1 so the value of _lv_trigo_sin(90) is the scaling factor
+  const auto LV_TRIG_SCALE = _lv_trigo_sin(90);
 
-int16_t Cosine(int16_t angle) {
-  return _lv_trigo_sin(angle + 90);
-}
+  int16_t Cosine(int16_t angle) {
+    return _lv_trigo_sin(angle + 90);
+  }
 
-int16_t Sine(int16_t angle) {
-  return _lv_trigo_sin(angle);
-}
+  int16_t Sine(int16_t angle) {
+    return _lv_trigo_sin(angle);
+  }
 
-int16_t CoordinateXRelocate(int16_t x) {
-  return (x + LV_HOR_RES / 2);
-}
+  int16_t CoordinateXRelocate(int16_t x) {
+    return (x + LV_HOR_RES / 2);
+  }
 
-int16_t CoordinateYRelocate(int16_t y) {
-  return std::abs(y - LV_HOR_RES / 2);
-}
+  int16_t CoordinateYRelocate(int16_t y) {
+    return std::abs(y - LV_HOR_RES / 2);
+  }
 
-lv_point_t CoordinateRelocate(int16_t radius, int16_t angle) {
-  return lv_point_t{
-    .x = CoordinateXRelocate(radius * static_cast<int32_t>(Sine(angle)) / LV_TRIG_SCALE),
-    .y = CoordinateYRelocate(radius * static_cast<int32_t>(Cosine(angle)) / LV_TRIG_SCALE)
-  };
-}
+  lv_point_t CoordinateRelocate(int16_t radius, int16_t angle) {
+    return lv_point_t {.x = CoordinateXRelocate(radius * static_cast<int32_t>(Sine(angle)) / LV_TRIG_SCALE),
+                       .y = CoordinateYRelocate(radius * static_cast<int32_t>(Cosine(angle)) / LV_TRIG_SCALE)};
+  }
 
 }
 
@@ -62,11 +60,17 @@ WatchFaceAnalog::WatchFaceAnalog(Pinetime::Applications::DisplayApp* app,
   sHour = 99;
   sMinute = 99;
   sSecond = 99;
-
+  lv_fs_file_t f;
   lv_obj_t* bg_clock_img = lv_img_create(lv_scr_act(), NULL);
-  lv_img_set_src(bg_clock_img, &bg_clock);
+  int res = lv_fs_open(&f, "F:/analogbg.bin", LV_FS_MODE_RD);
+  if (res == LV_FS_RES_OK) {
+    lv_fs_close(&f);
+    lv_img_set_src(bg_clock_img, "F:/analogbg.bin");
+  } else {
+    lv_img_set_src(bg_clock_img, &bg_clock);
+  }
+  
   lv_obj_align(bg_clock_img, NULL, LV_ALIGN_CENTER, 0, 0);
-
   batteryIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text(batteryIcon, Symbols::batteryHalf);
   lv_obj_align(batteryIcon, NULL, LV_ALIGN_IN_TOP_RIGHT, 0, 0);

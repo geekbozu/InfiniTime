@@ -33,6 +33,14 @@ WatchFaceDigital::WatchFaceDigital(DisplayApp* app,
     heartRateController {heartRateController},
     motionController {motionController} {
   settingsController.SetClockFace(0);
+  lv_fs_file_t f;
+  int res = lv_fs_open(&f, "F:/dbg.bin", LV_FS_MODE_RD);
+  if (res == LV_FS_RES_OK) {
+    lv_fs_close(&f);
+    bgImg = lv_img_create(lv_scr_act(), nullptr);
+    lv_img_set_src(bgImg, "F:/dbg.bin");
+    lv_obj_align(bgImg, nullptr, LV_ALIGN_CENTER, 0, 0);
+  }
 
   batteryIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text(batteryIcon, Symbols::batteryFull);
@@ -103,6 +111,7 @@ WatchFaceDigital::~WatchFaceDigital() {
 }
 
 void WatchFaceDigital::Refresh() {
+
   powerPresent = batteryController.IsPowerPresent();
   if (powerPresent.IsUpdated()) {
     lv_label_set_text(batteryPlug, BatteryIcon::GetPlugIcon(powerPresent.Get()));
@@ -197,9 +206,11 @@ void WatchFaceDigital::Refresh() {
 
     if ((year != currentYear) || (month != currentMonth) || (dayOfWeek != currentDayOfWeek) || (day != currentDay)) {
       if (settingsController.GetClockType() == Controllers::Settings::ClockType::H24) {
-        lv_label_set_text_fmt(label_date, "%s %d %s %d", dateTimeController.DayOfWeekShortToString(), day, dateTimeController.MonthShortToString(), year);
+        lv_label_set_text_fmt(
+          label_date, "%s %d %s %d", dateTimeController.DayOfWeekShortToString(), day, dateTimeController.MonthShortToString(), year);
       } else {
-        lv_label_set_text_fmt(label_date, "%s %s %d %d", dateTimeController.DayOfWeekShortToString(), dateTimeController.MonthShortToString(), day, year);
+        lv_label_set_text_fmt(
+          label_date, "%s %s %d %d", dateTimeController.DayOfWeekShortToString(), dateTimeController.MonthShortToString(), day, year);
       }
       lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_CENTER, 0, 60);
 
