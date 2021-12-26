@@ -56,7 +56,7 @@ Pinetime::Logging::NrfLogger logger;
   #include "logging/DummyLogger.h"
 Pinetime::Logging::DummyLogger logger;
 #endif
-
+#include <McuASAN.h>
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "OCInconsistentNamingInspection"
 
@@ -313,7 +313,7 @@ static __attribute__((used)) void TaskSwitchDummy() {
 
 [[noreturn]] int main() {
   logger.Init();
-
+  McuASAN_Init();
   nrf_drv_clock_init();
 
   // Unblock i2c?

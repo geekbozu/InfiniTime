@@ -130,7 +130,7 @@ void SystemTask::Work() {
   BootErrors bootError = BootErrors::None;
 
   watchdog.Setup(7);
-  watchdog.Start();
+  // watchdog.Start();
   NRF_LOG_INFO("Last reset reason : %s", Pinetime::Drivers::Watchdog::ResetReasonToString(watchdog.ResetReason()));
   APP_GPIOTE_INIT(2);
 

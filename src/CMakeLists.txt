@@ -47,7 +47,7 @@ set(SDK_SOURCE_FILES
         # FreeRTOS
         ${NRF5_SDK_PATH}/external/freertos/source/croutine.c
         ${NRF5_SDK_PATH}/external/freertos/source/event_groups.c
-        ${NRF5_SDK_PATH}/external/freertos/source/portable/MemMang/heap_4.c
+        ${NRF5_SDK_PATH}/external/freertos/source/portable/MemMang/heap_3.c
         ${NRF5_SDK_PATH}/external/freertos/source/list.c
         ${NRF5_SDK_PATH}/external/freertos/source/queue.c
         ${NRF5_SDK_PATH}/external/freertos/source/stream_buffer.c
@@ -398,6 +398,7 @@ list(APPEND IMAGE_FILES
         )
 
 list(APPEND SOURCE_FILES
+        McuASAN.c 
         BootloaderVersion.cpp
         logging/NrfLogger.cpp
         displayapp/DisplayApp.cpp
@@ -610,7 +611,8 @@ list(APPEND RECOVERYLOADER_SOURCE_FILES
 
 
 set(INCLUDE_FILES
-
+        McuASANConfig.h
+        McuASAN.h
         BootloaderVersion.h
         logging/Logger.h
         logging/NrfLogger.h
@@ -802,14 +804,14 @@ link_directories(
         ../
 )
 
-set(COMMON_FLAGS -MP -MD -mthumb -mabi=aapcs -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -flto -Wl,-flto -fuse-linker-plugin -Wl,-fuse-linker-plugin -fstack-usage -ftree-vrp -fstrict-aliasing -fshort-enums -fno-fat-lto-objects -fno-exceptions -fno-non-call-exceptions -fno-builtin -Wall -Wextra -Warray-bounds=2 -Wformat=2 -Wformat-overflow=2 -Wformat-truncation=2 -Wformat-nonliteral -Wreturn-type -Wno-unknown-pragmas -Werror=return-type -Os -g3)
+set(COMMON_FLAGS  -MP -MD  -fsanitize=address -static-libasan -mthumb -mabi=aapcs -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -flto -Wl,-flto -fuse-linker-plugin -Wl,-fuse-linker-plugin -fstack-usage -ftree-vrp -fstrict-aliasing -fshort-enums -fno-fat-lto-objects -fno-exceptions -fno-non-call-exceptions -fno-builtin -Wall -Wextra -Warray-bounds=2 -Wformat=2 -Wformat-overflow=2 -Wformat-truncation=2 -Wformat-nonliteral -Wreturn-type -Wno-unknown-pragmas -Werror=return-type -Os -g3)
 add_definitions(-DCONFIG_GPIO_AS_PINRESET)
 add_definitions(-DNIMBLE_CFG_CONTROLLER)
 add_definitions(-DOS_CPUTIME_FREQ)
 add_definitions(-DNRF52 -DNRF52832 -DNRF52832_XXAA -DNRF52_PAN_74 -DNRF52_PAN_64 -DNRF52_PAN_12 -DNRF52_PAN_58 -DNRF52_PAN_54 -DNRF52_PAN_31 -DNRF52_PAN_51 -DNRF52_PAN_36 -DNRF52_PAN_15 -DNRF52_PAN_20 -DNRF52_PAN_55 -DBOARD_PCA10040)
 add_definitions(-DFREERTOS)
 add_definitions(-D__STACK_SIZE=1024)
-add_definitions(-D__HEAP_SIZE=4096)
+add_definitions(-D__HEAP_SIZE=4096*4)
 
 # NOTE : Add the following defines to enable debug mode of the NRF SDK:
 #add_definitions(-DDEBUG)
@@ -819,9 +821,9 @@ if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Release")
 endif ()
 
-if (CMAKE_BUILD_TYPE MATCHES Release)
-    set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
-endif ()
+
+set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+
 
 # NRF SDK
 add_library(nrf-sdk STATIC ${SDK_SOURCE_FILES})

@@ -23,7 +23,7 @@ namespace Pinetime {
     public:
       void Process() const {
         if (xTaskGetTickCount() - lastTick > 10000) {
-          NRF_LOG_INFO("---------------------------------------\nFree heap : %d", xPortGetFreeHeapSize());
+          // NRF_LOG_INFO("---------------------------------------\nFree heap : %d", xPortGetFreeHeapSize());
           auto nb = uxTaskGetSystemState(tasksStatus, 10, nullptr);
           for (uint32_t i = 0; i < nb; i++) {
             NRF_LOG_INFO("Task [%s] - %d", tasksStatus[i].pcTaskName, tasksStatus[i].usStackHighWaterMark);
