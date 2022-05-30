@@ -2,9 +2,12 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"label": "create openocd build",
-			"type": "shell",
-			"command": "/opt/create_build_openocd.sh",
+			"label": "build",
+			"type": "process",
+			"command": "/opt/build.sh",
+			"args": [
+				"all"
+			],
 			"group": {
 				"kind": "build",
 				"isDefault": true
@@ -24,7 +27,7 @@
 			},
 			"group": {
 				"kind": "build",
-				"isDefault": true
+				"isDefault": false
 			},
 			"presentation": {
 				"reveal": "always",
